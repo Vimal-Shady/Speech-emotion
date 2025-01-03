@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Upload</title>
+    <link rel="stylesheet" href="static/styles.css"> <!-- Use forward slashes for paths -->
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Audio File</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" accept="audio/*" required>
+            <button type="submit">Upload</button>
+        </form>
+        <div id="result" class="result-container">
+            <h2>Transcription:</h2>
+            <p id="transcription"></p>
+            <h2>Sentiment:</h2>
+            <p id="sentiment"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting the default way
+
+            const formData = new FormData(this);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('transcription').innerText = data.transcription;
+                    document.getElementById('sentiment').innerText = `${data.sentiment.label} (${data.sentiment.score})`;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
